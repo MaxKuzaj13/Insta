@@ -57,23 +57,19 @@ def pars_dowloaded(d):
     return downloaded_id
 
 
-def save_now_dowloaded():
+def save_now_downloaded():
     now_time = datetime.now()
-    # print(str(now))
     dic[now_time.strftime("%Y_%m_%d_%H_%M_%S")] = str(list(df_filtered_new['id'].head(limit)))
-    # print(type(dic))
     json_object = json.dumps(dic, indent=3, sort_keys=True)
-    # print(type(json_object))
-    # print(json_object)
     with open('downloaded.json', 'w') as f:
         json.dump(json_object, f, ensure_ascii=False)
     return now_time
 
 
-def iterate_and_save_photos(df_filtred_new):
-    for id_el in range(len(df_filtred_new)):
-        print(df_filtred_new['id'][id_el])
-        url = df_filtred_new['largeImageURL'][id_el]
+def iterate_and_save_photos(df_filtered_new):
+    for id_el in range(len(df_filtered_new)):
+        print(df_filtered_new['id'][id_el])
+        url = df_filtered_new['largeImageURL'][id_el]
         f_ext = os.path.splitext(url)[-1]
         try:
             path = os.path.join('img/', now.strftime("%Y_%m_%d"))
@@ -83,16 +79,16 @@ def iterate_and_save_photos(df_filtred_new):
         image = Image.open(requests.get(url, stream=True).raw)
         # image watermark
         size = (100, 100)
-        width = image.size[0] - size[0]
-        height = image.size[1] - size[1]
-        crop_image = Image.open('img/logo_square.png')
-        # to keep the aspect ration in intact
+        position_width = image.size[0] - size[0]
+        position_height = image.size[1] - size[1]
+        crop_image = Image.open('watermark_img/logo_square.png')
+        # to keep the aspect ratio in intact
         crop_image.thumbnail(size)
         # add watermark
         copied_image = image.copy()
         # base image
-        copied_image.paste(crop_image, (width, height))
-        f_name = 'img/' + now.strftime("%Y_%m_%d") + '/img_' + str(df_filtred_new['id'][id_el]) + '{}'.format(
+        copied_image.paste(crop_image, (position_width, position_height))
+        f_name = 'img/' + now.strftime("%Y_%m_%d") + '/img_' + str(df_filtered_new['id'][id_el]) + '{}'.format(
             f_ext)
         copied_image.save(f_name)
 
@@ -108,7 +104,7 @@ if __name__ == "__main__":
     downloaded = pars_dowloaded(dic)
     df_filtered_new = df_sorted[~df_sorted.id.isin(downloaded)]
     df_filtered_new = df_filtered_new.reset_index().drop(['index'], axis=1).head(limit)
-    now = save_now_dowloaded()
+    now = save_now_downloaded()
     iterate_and_save_photos(df_filtered_new)
     print('Finished')
 
