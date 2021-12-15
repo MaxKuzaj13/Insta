@@ -77,7 +77,7 @@ def iterate_and_save_photos(df_filtered_new):
         except FileExistsError:
             pass
         image = Image.open(requests.get(url, stream=True).raw)
-        # image watermark
+        # image watermark size
         size = (100, 100)
         position_width = image.size[0] - size[0]
         position_height = image.size[1] - size[1]
@@ -107,6 +107,5 @@ if __name__ == "__main__":
     now = save_now_downloaded()
     iterate_and_save_photos(df_filtered_new)
     print('Finished')
-
 else:
     print("Executed when imported")
